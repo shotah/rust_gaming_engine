@@ -1,0 +1,55 @@
+# Rust formatting configuration for Voxel Forge
+# https://rust-lang.github.io/rustfmt/
+
+edition = "2024"
+
+# Maximum width of each line
+max_width = 100
+
+# Number of spaces per tab
+tab_spaces = 4
+
+# Use spaces instead of tabs
+hard_tabs = false
+
+# Put single-expression functions on a single line
+fn_single_line = false
+
+# Format string literals where necessary
+format_strings = false
+
+# Format code in doc comments
+format_code_in_doc_comments = true
+
+# Format macro matchers
+format_macro_matchers = true
+
+# Format macro bodies
+format_macro_bodies = true
+
+# Use field init shorthand if possible
+use_field_init_shorthand = true
+
+# Use try! macro in places where ? is used
+use_try_shorthand = true
+
+# Merge imports into a single use statement
+imports_granularity = "Crate"
+
+# Group imports by module
+group_imports = "StdExternalCrate"
+
+# Reorder imports alphabetically
+reorder_imports = true
+
+# Reorder modules alphabetically
+reorder_modules = true
+
+# Remove nested parens
+remove_nested_parens = true
+
+# Normalize doc attributes
+normalize_doc_attributes = true
+
+# Use Windows-style line endings when necessary
+newline_style = "Auto"

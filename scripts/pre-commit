@@ -1,0 +1,71 @@
+#!/bin/bash
+# Pre-commit hook for Voxel Forge
+# This script runs before each commit to ensure code quality
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+echo ""
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Track if any check fails
+FAILED=0
+
+# Function to print status
+print_status() {
+    if [ $1 -eq 0 ]; then
+        echo -e "${GREEN}✓${NC} $2"
+    else
+        echo -e "${RED}✗${NC} $2"
+        FAILED=1
+    fi
+}
+
+# Check 1: Format check
+echo "📝 Checking code formatting..."
+if cargo fmt --all -- --check > /dev/null 2>&1; then
+    print_status 0 "Code formatting"
+else
+    print_status 1 "Code formatting - run 'make fmt' to fix"
+fi
+
+# Check 2: Clippy linting
+echo "🔎 Running clippy..."
+if cargo clippy --all-targets --all-features -- -D warnings > /dev/null 2>&1; then
+    print_status 0 "Clippy linting"
+else
+    print_status 1 "Clippy linting - run 'make lint' to see issues"
+fi
+
+# Check 3: Run tests
+echo "🧪 Running tests..."
+if cargo test --all-features > /dev/null 2>&1; then
+    print_status 0 "Tests"
+else
+    print_status 1 "Tests - run 'make test' to see failures"
+fi
+
+# Check 4: Check for TODO/FIXME in staged files (warning only)
+echo "📋 Checking for TODOs in staged files..."
+TODOS=$(git diff --cached --name-only | xargs grep -l "TODO\|FIXME" 2>/dev/null || true)
+if [ -n "$TODOS" ]; then
+    echo -e "${YELLOW}⚠${NC}  Found TODO/FIXME comments in: $TODOS"
+fi
+
+echo ""
+
+# Final result
+if [ $FAILED -eq 0 ]; then
+    echo -e "${GREEN}✅ All pre-commit checks passed!${NC}"
+    exit 0
+else
+    echo -e "${RED}❌ Pre-commit checks failed. Please fix the issues above.${NC}"
+    echo ""
+    echo "To bypass this check (not recommended), use: git commit --no-verify"
+    exit 1
+fi
