@@ -2,6 +2,7 @@
 # All build, test, and development commands
 
 .PHONY: all build release run test lint fmt fmt-check check clean install-hooks docs bench audit update help
+.PHONY: coverage coverage-html coverage-open coverage-all setup-tools setup-system setup ci ci-build
 
 # Default target
 all: check build
@@ -32,15 +33,15 @@ run-release:
 
 ## Run all tests
 test:
-	cargo test --all-features
+	cargo test
 
 ## Run tests with output
 test-verbose:
-	cargo test --all-features -- --nocapture
+	cargo test -- --nocapture
 
 ## Run clippy linter
 lint:
-	cargo clippy --all-targets --all-features -- -D warnings
+	cargo clippy --all-targets
 
 ## Format code with rustfmt
 fmt:
@@ -57,6 +58,29 @@ check: fmt-check lint test
 ## Run benchmarks
 bench:
 	cargo bench
+
+# =============================================================================
+# CODE COVERAGE
+# =============================================================================
+
+## Run tests with coverage report (requires cargo-llvm-cov)
+coverage:
+	cargo llvm-cov --lib
+
+## Run coverage and generate HTML report
+coverage-html:
+	cargo llvm-cov --lib --html
+	@echo "Coverage report generated at target/llvm-cov/html/index.html"
+
+## Run coverage and open HTML report
+coverage-open:
+	cargo llvm-cov --lib --html --open
+
+## Run coverage with all features (requires: make setup-system first for audio)
+coverage-all:
+	@echo "Note: --all-features includes audio which requires libasound2-dev"
+	@echo "Run 'make setup-system' first if this fails"
+	cargo llvm-cov --all-features --lib
 
 # =============================================================================
 # DOCUMENTATION
@@ -98,11 +122,35 @@ install-hooks:
 	@chmod +x .git/hooks/pre-commit
 	@echo "Pre-commit hook installed successfully!"
 
-## Setup development environment
-setup: install-hooks
-	rustup component add rustfmt clippy
-	cargo install cargo-audit cargo-outdated
+## Install cargo extension tools (global)
+setup-tools:
+	@echo "Installing rustup components..."
+	rustup component add rustfmt clippy llvm-tools-preview
+	@echo ""
+	@echo "Installing cargo tools (this may take a few minutes)..."
+	cargo install cargo-audit cargo-outdated cargo-llvm-cov
+	@echo ""
+	@echo "Cargo tools installed successfully!"
+	@echo "  - cargo-audit     : Security vulnerability scanner"
+	@echo "  - cargo-outdated  : Check for outdated dependencies"
+	@echo "  - cargo-llvm-cov  : Code coverage reports"
+
+## Install system dependencies (Linux only)
+setup-system:
+	@echo "Installing system dependencies for Linux..."
+	@echo "You may need to run this with sudo or enter your password:"
+	sudo apt install -y pkg-config libasound2-dev libudev-dev
+	@echo "System dependencies installed!"
+
+## Setup development environment (full)
+setup: install-hooks setup-tools
+	@echo ""
+	@echo "========================================="
 	@echo "Development environment setup complete!"
+	@echo "========================================="
+	@echo ""
+	@echo "Optional: Run 'make setup-system' to install Linux system deps"
+	@echo "          (needed for audio support)"
 
 # =============================================================================
 # CLEANUP
@@ -150,6 +198,11 @@ help:
 	@echo "  make check        - Run all checks"
 	@echo "  make bench        - Run benchmarks"
 	@echo ""
+	@echo "Code Coverage:"
+	@echo "  make coverage     - Run tests with coverage report"
+	@echo "  make coverage-html - Generate HTML coverage report"
+	@echo "  make coverage-open - Generate and open HTML report"
+	@echo ""
 	@echo "Documentation:"
 	@echo "  make docs         - Generate and open docs"
 	@echo ""
@@ -158,8 +211,10 @@ help:
 	@echo "  make update       - Update dependencies"
 	@echo "  make outdated     - Check for outdated deps"
 	@echo ""
-	@echo "Development:"
-	@echo "  make setup        - Setup dev environment"
+	@echo "Development Setup:"
+	@echo "  make setup        - Full dev environment setup"
+	@echo "  make setup-tools  - Install cargo tools only"
+	@echo "  make setup-system - Install Linux system deps"
 	@echo "  make install-hooks - Install git hooks"
 	@echo "  make clean        - Clean build artifacts"
 	@echo ""

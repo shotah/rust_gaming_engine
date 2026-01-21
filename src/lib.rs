@@ -15,9 +15,10 @@
 //! ```no_run
 //! use voxel_forge::Engine;
 //!
-//! fn main() {
-//!     let engine = Engine::new();
-//!     engine.run();
+//! fn main() -> anyhow::Result<()> {
+//!     let engine = Engine::new()?;
+//!     engine.run()?;
+//!     Ok(())
 //! }
 //! ```
 
@@ -25,18 +26,14 @@
 #![allow(clippy::module_name_repetitions)]
 
 pub mod engine;
+pub mod world;
 
 // Re-export commonly used types
 pub use engine::Engine;
+pub use world::{Block, Chunk, ChunkPos};
 
 /// The current version of the engine.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-/// Default chunk size (16x16x16 blocks per section).
-pub const CHUNK_SIZE: usize = 16;
-
-/// Default chunk height (256 blocks).
-pub const CHUNK_HEIGHT: usize = 256;
 
 #[cfg(test)]
 mod tests {
@@ -49,7 +46,7 @@ mod tests {
 
     #[test]
     fn chunk_constants_are_valid() {
-        assert!(CHUNK_SIZE > 0);
-        assert!(CHUNK_HEIGHT > 0);
+        assert!(world::SECTION_SIZE > 0);
+        assert!(world::CHUNK_HEIGHT > 0);
     }
 }
