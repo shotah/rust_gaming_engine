@@ -3,6 +3,13 @@
 //! Uses DDA (Digital Differential Analyzer) algorithm to efficiently
 //! step through the voxel grid and find block intersections.
 
+// Allow patterns that are clearer for DDA algorithm
+#![allow(
+    clippy::while_float,
+    clippy::manual_range_contains,
+    clippy::cast_precision_loss
+)]
+
 use glam::Vec3;
 
 /// Result of a ray cast hit.

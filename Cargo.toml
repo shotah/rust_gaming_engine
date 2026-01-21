@@ -104,3 +104,10 @@ cargo = { level = "warn", priority = -1 }
 # Allow some common patterns
 module_name_repetitions = "allow"
 too_many_lines = "allow"
+# Transitive dependencies have multiple versions - out of our control
+multiple_crate_versions = "allow"
+# These are overly pedantic for our codebase
+similar_names = "allow"
+unreadable_literal = "allow"
+while_float = "allow"
+missing_const_for_fn = "allow"

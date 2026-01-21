@@ -7,8 +7,10 @@ pub mod camera;
 pub mod chunk_renderer;
 pub mod fps_counter;
 pub mod input;
+pub mod overlay;
 pub mod renderer;
 pub mod window;
+pub mod wireframe;
 
 use anyhow::Result;
 use tracing::info;

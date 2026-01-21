@@ -2,6 +2,19 @@
 //!
 //! Generates procedural textures for blocks and combines them into an atlas.
 
+// Allow some patterns that are intentional for procedural generation
+#![allow(
+    clippy::cast_precision_loss,      // Intentional for noise/color generation
+    clippy::cast_possible_truncation, // Pixel values are always in range
+    clippy::cast_sign_loss,           // Pixel values are always positive
+    clippy::cast_possible_wrap,       // Pixel coordinates are always small
+    clippy::manual_is_multiple_of,    // Clearer as modulo for visual patterns
+    clippy::cast_lossless,            // Using as for concise conversions
+    clippy::suboptimal_flops,         // Readability over micro-optimization
+    clippy::imprecise_flops,          // Precision not critical for visuals
+    clippy::too_many_lines,           // Procedural texture gen is complex
+)]
+
 use super::block::Block;
 
 /// Size of each texture in pixels.
@@ -57,7 +70,8 @@ impl TextureAtlas {
     }
 
     /// Returns UV coordinates for a block face.
-    /// Returns (u_min, v_min, u_max, v_max) normalized to [0, 1].
+    ///
+    /// Returns `(u_min, v_min, u_max, v_max)` normalized to `[0, 1]`.
     #[must_use]
     pub fn block_uvs(block: Block) -> (f32, f32, f32, f32) {
         let (col, row) = Self::block_atlas_position(block);
@@ -77,13 +91,13 @@ impl TextureAtlas {
         block: Block,
     ) {
         let base_color = block.color();
-        let pixel_x_start = atlas_x * TEXTURE_SIZE;
-        let pixel_y_start = atlas_y * TEXTURE_SIZE;
+        let base_x = atlas_x * TEXTURE_SIZE;
+        let base_y = atlas_y * TEXTURE_SIZE;
 
         for local_y in 0..TEXTURE_SIZE {
             for local_x in 0..TEXTURE_SIZE {
-                let px = pixel_x_start + local_x;
-                let py = pixel_y_start + local_y;
+                let px = base_x + local_x;
+                let py = base_y + local_y;
                 let idx = ((py * atlas_width + px) * 4) as usize;
 
                 let (r, g, b) = Self::generate_pixel(block, local_x, local_y, base_color);

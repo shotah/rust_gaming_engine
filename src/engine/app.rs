@@ -21,8 +21,10 @@ use super::camera::{Camera, CameraConfig};
 use super::chunk_renderer::{CameraUniform, ChunkBuffers, ChunkRenderer};
 use super::fps_counter::FpsCounter;
 use super::input::{InputState, MouseButton};
+use super::overlay::OverlayRenderer;
 use super::renderer::{Renderer, RendererConfig};
 use super::window::{GameWindow, WindowConfig};
+use super::wireframe::WireframeRenderer;
 
 use std::collections::HashMap;
 
@@ -58,6 +60,10 @@ pub struct App {
     targeted_block: Option<RaycastHit>,
     /// Block type to place (simple hotbar simulation).
     selected_block: Block,
+    /// Overlay renderer for HUD elements.
+    overlay_renderer: Option<OverlayRenderer>,
+    /// Wireframe renderer for block selection.
+    wireframe_renderer: Option<WireframeRenderer>,
 }
 
 impl App {
@@ -90,6 +96,8 @@ impl App {
             frame_count: 0,
             targeted_block: None,
             selected_block: Block::Stone,
+            overlay_renderer: None,
+            wireframe_renderer: None,
         }
     }
 
@@ -115,12 +123,25 @@ impl App {
                 size.height,
             )?;
 
+            // Create overlay renderer for HUD
+            let overlay_renderer =
+                OverlayRenderer::new(renderer.device(), renderer.surface_format());
+
+            // Create wireframe renderer for block selection
+            let wireframe_renderer = WireframeRenderer::new(
+                renderer.device(),
+                renderer.surface_format(),
+                wgpu::TextureFormat::Depth32Float,
+            );
+
             info!(
                 "Chunk manager started with render distance {}",
                 self.chunk_manager.render_distance()
             );
 
             self.chunk_renderer = Some(chunk_renderer);
+            self.overlay_renderer = Some(overlay_renderer);
+            self.wireframe_renderer = Some(wireframe_renderer);
             self.renderer = Some(renderer);
         }
         Ok(())
@@ -411,6 +432,43 @@ impl App {
 
             // Render chunks
             chunk_renderer.render(&mut render_pass, self.chunk_buffers.values());
+
+            // Render block selection wireframe if we have a target
+            if let (Some(wireframe_renderer), Some(hit)) =
+                (&self.wireframe_renderer, &self.targeted_block)
+            {
+                wireframe_renderer
+                    .update_camera(renderer.queue(), self.camera.view_projection_matrix());
+                wireframe_renderer.update_highlight(
+                    renderer.queue(),
+                    Vec3::new(
+                        hit.block_pos.x as f32,
+                        hit.block_pos.y as f32,
+                        hit.block_pos.z as f32,
+                    ),
+                );
+                wireframe_renderer.render(&mut render_pass);
+            }
+        }
+
+        // Overlay render pass (no depth testing for 2D elements)
+        if let Some(overlay_renderer) = &self.overlay_renderer {
+            let mut overlay_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("Overlay Render Pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &view,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Load, // Don't clear, draw on top
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: None, // No depth for 2D
+                occlusion_query_set: None,
+                timestamp_writes: None,
+            });
+
+            overlay_renderer.render_crosshair(&mut overlay_pass);
         }
 
         // Submit and present

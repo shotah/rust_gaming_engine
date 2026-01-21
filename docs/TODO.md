@@ -51,7 +51,7 @@
 - [x] Greedy meshing optimization (80-90% triangle reduction!)
 - [ ] Ambient occlusion calculation
 - [x] Texture UV mapping
-- [ ] Mesh rebuilding on block changes
+- [x] Mesh rebuilding on block changes
 
 ### Chunk Management
 - [x] Chunk loading/unloading based on player position
@@ -174,7 +174,8 @@
 *Menus and HUD*
 
 ### In-Game HUD
-- [ ] Crosshair
+- [x] Crosshair
+- [x] Block selection wireframe highlight
 - [ ] Hotbar
 - [ ] Health/hunger bars
 - [ ] Debug screen (F3)

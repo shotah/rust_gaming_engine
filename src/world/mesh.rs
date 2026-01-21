@@ -389,8 +389,8 @@ impl MeshGenerator {
         let color = block.color();
 
         // Get texture atlas base position for this block
-        let (tex_u_min, tex_v_min, _, _) = TextureAtlas::block_uvs(block);
-        let atlas_uv = [tex_u_min, tex_v_min];
+        let (atlas_u, atlas_v, _, _) = TextureAtlas::block_uvs(block);
+        let atlas_uv = [atlas_u, atlas_v];
 
         // Local UV corners for tiling (0 to width, 0 to height)
         // Corner order: (0,0), (width,0), (width,height), (0,height)
@@ -536,8 +536,8 @@ pub fn generate_test_cube(block: Block) -> ChunkMesh {
     let color = block.color();
 
     // Get texture atlas base position for this block
-    let (tex_u_min, tex_v_min, _, _) = TextureAtlas::block_uvs(block);
-    let atlas_uv = [tex_u_min, tex_v_min];
+    let (atlas_u, atlas_v, _, _) = TextureAtlas::block_uvs(block);
+    let atlas_uv = [atlas_u, atlas_v];
 
     // Vertices ordered to match greedy mesh: corners[i] at (u_off, v_off) positions
     // (0,0), (width,0), (width,height), (0,height) in the face's UV space
