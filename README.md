@@ -11,64 +11,16 @@ Build a modern, performant voxel game engine that leverages Rust's safety guaran
 
 ## 🚀 Core Engine Features
 
-### Rendering System
-- [ ] Vulkan/wgpu-based rendering pipeline
-- [ ] Efficient chunk-based mesh generation
-- [ ] Frustum culling and occlusion culling
-- [ ] Dynamic lighting (ambient, point, directional, spot)
-- [ ] Shadow mapping
-- [ ] Ambient occlusion
-- [ ] Post-processing effects (bloom, SSAO, DOF)
-- [ ] Sky rendering with day/night cycle
-- [ ] Water rendering with reflections/refractions
-- [ ] Particle systems
+- **Rendering**: wgpu-based pipeline, chunk meshing, frustum culling, lighting, shadows, post-processing
+- **World Generation**: Procedural terrain, biomes, caves, structures, infinite world support
+- **Physics & Collision**: AABB collision, voxel physics, fluid dynamics
+- **Entity Component System**: High-performance ECS with parallel systems
+- **Networking**: Client-server architecture, state sync, lag compensation
+- **Audio**: 3D positional audio, music, ambient sounds
+- **Input & UI**: Keyboard/mouse/gamepad, customizable bindings, in-game UI
+- **Resource Management**: Asset loading, hot-reloading, mod support
 
-### World Generation
-- [ ] Procedural terrain generation (noise-based)
-- [ ] Biome system with smooth transitions
-- [ ] Cave and structure generation
-- [ ] Chunk loading/unloading system
-- [ ] World serialization and persistence
-- [ ] Infinite world support
-
-### Physics & Collision
-- [ ] AABB collision detection
-- [ ] Voxel-based physics
-- [ ] Gravity and movement physics
-- [ ] Fluid dynamics simulation
-- [ ] Rigid body physics for entities
-
-### Entity Component System (ECS)
-- [ ] High-performance ECS architecture
-- [ ] Entity spawning and despawning
-- [ ] Component-based entity design
-- [ ] System scheduling and parallelism
-
-### Networking
-- [ ] Client-server architecture
-- [ ] State synchronization
-- [ ] Lag compensation
-- [ ] Chunk streaming over network
-- [ ] Player authentication
-
-### Audio
-- [ ] 3D positional audio
-- [ ] Music and ambient sounds
-- [ ] Sound effect system
-- [ ] Audio streaming
-
-### Input & UI
-- [ ] Keyboard, mouse, and gamepad support
-- [ ] Customizable key bindings
-- [ ] In-game UI framework
-- [ ] Inventory and crafting interfaces
-- [ ] Chat system
-
-### Resource Management
-- [ ] Asset loading and caching
-- [ ] Hot-reloading support
-- [ ] Mod/plugin architecture
-- [ ] Resource packs
+📋 **See [Development Roadmap](docs/TODO.md) for detailed progress and task tracking.**
 
 ## 📁 Project Structure
 
